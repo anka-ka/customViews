@@ -44,8 +44,11 @@ class StatsView @JvmOverloads constructor(
     var data: List<Float> = emptyList()
         set(value) {
             field = value
+            calculatePercentages()
             invalidate()
         }
+
+    private var percentages: List<Float> = emptyList()
 
     private var radius = 0F
     private var center = PointF()
@@ -67,6 +70,20 @@ class StatsView @JvmOverloads constructor(
     }
 
 
+    private fun calculatePercentages() {
+        val numberOfSegments = data.size
+
+        percentages = when {
+            numberOfSegments > 0 -> {
+                List(data.size) { 0.25F }
+            }
+            else -> {
+                List(data.size) { 0F }
+            }
+        }
+    }
+
+
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         radius = min(w, h) / 2F - lineWidth
         center = PointF(w / 2F, h / 2F)
@@ -80,12 +97,12 @@ class StatsView @JvmOverloads constructor(
     }
 
     override fun onDraw(canvas: Canvas) {
-        if (data.isEmpty()) {
+        if (percentages.isEmpty()) {
             return
         }
-        var startAngle = -90F
-        data.forEachIndexed { index, datum ->
-            val angle = datum * 360F
+        var startAngle = 90F
+        percentages.forEachIndexed { index, percentage ->
+            val angle = percentage * 360F
             paint.color = colors.getOrElse(index) { generateRandomColor() }
             canvas.drawArc(oval, startAngle, angle, false, paint)
             startAngle += angle
@@ -93,7 +110,7 @@ class StatsView @JvmOverloads constructor(
         }
 
         canvas.drawText(
-            "%.2f%%".format(data.sum() * 100),
+            "%.2f%%".format(percentages.sum() * 100),
             center.x,
             center.y + textPaint.textSize / 4,
             textPaint
