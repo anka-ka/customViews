@@ -24,8 +24,7 @@ class MainActivity : AppCompatActivity() {
 
         val textView = findViewById<TextView>(R.id.label)
 
-        view.startAnimation(
-            AnimationUtils.loadAnimation(this, R.anim.animation).apply {
+        val viewAnim = AnimationUtils.loadAnimation(this, R.anim.animation).apply {
                 setAnimationListener(object: Animation.AnimationListener{
                     override fun onAnimationStart(p0: Animation?) {
                         textView.text = "onAnimationStart"
@@ -42,6 +41,6 @@ class MainActivity : AppCompatActivity() {
                 })
             }
 
-        )
+        view.startAnimation(viewAnim)
     }
 }
