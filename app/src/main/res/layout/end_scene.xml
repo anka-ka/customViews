@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ru.netology.statsview.ui.StatsView
+        android:id="@+id/startsView"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_gravity="center|start"
+        app:textSize="20sp"
+        app:lineWidh="20dp"
+        app:color1="#DC143C"
+        app:color2="#0000CD"
+        app:color3="#FFFF00"
+        app:color4="#20B2AA"
+        />
+
+
+    <ru.netology.statsview.ui.StatsView
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_gravity="center|end"
+        app:textSize="20sp"
+        app:lineWidh="20dp"
+        app:color1="#DC143C"
+        app:color2="#0000CD"
+        app:color3="#FFFF00"
+        app:color4="#20B2AA"
+        />
+
+</merge>

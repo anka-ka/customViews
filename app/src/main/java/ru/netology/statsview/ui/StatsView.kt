@@ -1,12 +1,15 @@
 package ru.netology.statsview.ui
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.PointF
 import android.graphics.RectF
+import android.provider.SyncStateContract.Helpers.update
 import android.util.AttributeSet
 import android.view.View
+import android.view.animation.LinearInterpolator
 import androidx.core.content.withStyledAttributes
 import ru.netology.statsview.R
 import ru.netology.statsview.utils.AndroidUtils
@@ -24,9 +27,12 @@ class StatsView @JvmOverloads constructor(
     defStyleAttr,
     defStyleRes
 ) {
+
     private var textSize = AndroidUtils.dp(context, 20).toFloat()
     private var lineWidth = AndroidUtils.dp(context, 5)
     private var colors = emptyList<Int>()
+    private var progress =0F
+    private var valueAnimator:ValueAnimator?=null
 
     init {
         context.withStyledAttributes(attributeSet, R.styleable.StatsView) {
@@ -41,14 +47,18 @@ class StatsView @JvmOverloads constructor(
         }
     }
 
+
     var data: List<Float> = emptyList()
         set(value) {
             field = value
+            update()
             calculatePercentages()
-            invalidate()
+           // invalidate()
+
         }
 
     private var percentages: List<Float> = emptyList()
+
 
     private var radius = 0F
     private var center = PointF()
@@ -61,6 +71,7 @@ class StatsView @JvmOverloads constructor(
         strokeJoin = Paint.Join.ROUND
         strokeCap = Paint.Cap.ROUND
     }
+
     private val textPaint = Paint(
         Paint.ANTI_ALIAS_FLAG
     ).apply {
@@ -101,10 +112,11 @@ class StatsView @JvmOverloads constructor(
             return
         }
         var startAngle = 90F
+        val progressAngle = progress * 360F
         percentages.forEachIndexed { index, percentage ->
             val angle = percentage * 360F
             paint.color = colors.getOrElse(index) { generateRandomColor() }
-            canvas.drawArc(oval, startAngle, angle, false, paint)
+            canvas.drawArc(oval, startAngle + progressAngle, angle*progress, false, paint)
             startAngle += angle
 
         }
@@ -117,6 +129,26 @@ class StatsView @JvmOverloads constructor(
 
         )
     }
+    private fun update() {
+        valueAnimator?.let {
+            it.removeAllListeners()
+            it.cancel()
+        }
+        progress = 0F
+
+        valueAnimator = ValueAnimator.ofFloat(0F, 1F).apply {
+            addUpdateListener { anim ->
+                progress = anim.animatedValue as Float
+                invalidate()
+            }
+            duration = 5000
+            interpolator = LinearInterpolator()
+        }.also {
+            it.start()
+        }
+    }
 
     private fun generateRandomColor() = Random.nextInt(0xFF000000.toInt(), 0xFFFFFFFF.toInt())
-}
+
+
+    }
